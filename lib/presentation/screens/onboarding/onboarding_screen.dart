@@ -11,8 +11,7 @@ class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  ConsumerState<OnboardingScreen> createState() =>
-      _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
@@ -39,18 +38,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     try {
       final userRepo = ref.read(userRepositoryProvider);
 
-      await userRepo.createCurrentUser(
-        _nameController.text,
-      );
+      await userRepo.createCurrentUser(_nameController.text);
 
       final db = ref.read(appDatabaseProvider);
 
-      await (db.update(db.appSettingsTable)
-        ..where((s) => s.id.equals(0)))
-          .write(
-        const AppSettingsTableCompanion(
-          onboardingComplete: Value(true),
-        ),
+      await (db.update(
+        db.appSettingsTable,
+      )..where((s) => s.id.equals(0))).write(
+        const AppSettingsTableCompanion(onboardingComplete: Value(true)),
       );
 
       // Navigation happens automatically:
@@ -61,11 +56,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Something went wrong: $e'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Something went wrong: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -82,9 +75,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(
-            AppConstants.spaceLg,
-          ),
+          padding: const EdgeInsets.all(AppConstants.spaceLg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -96,18 +87,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 color: theme.colorScheme.primary,
               ),
 
-              const SizedBox(
-                height: AppConstants.spaceMd,
-              ),
+              const SizedBox(height: AppConstants.spaceMd),
 
-              Text(
-                AppConstants.appName,
-                style: theme.textTheme.headlineMedium,
-              ),
+              Text(AppConstants.appName, style: theme.textTheme.headlineMedium),
 
-              const SizedBox(
-                height: AppConstants.spaceSm,
-              ),
+              const SizedBox(height: AppConstants.spaceSm),
 
               Text(
                 AppConstants.tagline,
@@ -116,9 +100,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
               ),
 
-              const SizedBox(
-                height: AppConstants.spaceXl,
-              ),
+              const SizedBox(height: AppConstants.spaceXl),
 
               Form(
                 key: _formKey,
@@ -155,19 +137,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   onPressed: _isSubmitting ? null : _submit,
                   child: _isSubmitting
                       ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                    ),
-                  )
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Text('Get started'),
                 ),
               ),
 
-              const SizedBox(
-                height: AppConstants.spaceMd,
-              ),
+              const SizedBox(height: AppConstants.spaceMd),
             ],
           ),
         ),

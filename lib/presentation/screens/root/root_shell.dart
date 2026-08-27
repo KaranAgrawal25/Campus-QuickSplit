@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../dashboard/dashboard_screen.dart';
+import '../groups/groups_screen.dart';
+import '../activity/activity_screen.dart';
+import '../more/more_screen.dart';
 
 /// Bottom-nav shell. Groups/Activity/More are intentionally simple
 /// placeholder screens for Phase 1 — they get real content in Phase 2
@@ -19,9 +22,9 @@ class _RootShellState extends State<RootShell> {
 
   static const _screens = [
     DashboardScreen(),
-    _PlaceholderScreen(title: 'Groups', icon: Icons.groups_outlined),
-    _PlaceholderScreen(title: 'Activity', icon: Icons.history),
-    _PlaceholderScreen(title: 'More', icon: Icons.more_horiz),
+    GroupsScreen(),
+    ActivityScreen(),
+    MoreScreen(),
   ];
 
   @override
@@ -33,38 +36,13 @@ class _RootShellState extends State<RootShell> {
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.groups_outlined), label: 'Groups'),
+          NavigationDestination(
+            icon: Icon(Icons.groups_outlined),
+            label: 'Groups',
+          ),
           NavigationDestination(icon: Icon(Icons.history), label: 'Activity'),
           NavigationDestination(icon: Icon(Icons.more_horiz), label: 'More'),
         ],
-      ),
-    );
-  }
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen({required this.title, required this.icon});
-
-  final String title;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 48, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(height: 12),
-            Text(
-              '$title arrives in a later phase',
-              style: theme.textTheme.bodyMedium,
-            ),
-          ],
-        ),
       ),
     );
   }

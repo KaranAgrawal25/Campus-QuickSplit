@@ -34,10 +34,7 @@ class DashboardScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppConstants.spaceMd),
           children: [
-            Text(
-              '${_greeting()}, $name',
-              style: theme.textTheme.titleLarge,
-            ),
+            Text('${_greeting()}, $name', style: theme.textTheme.titleLarge),
             const SizedBox(height: AppConstants.spaceLg),
             summaryAsync.when(
               data: (summary) => _BalanceCards(summary: summary),
@@ -55,9 +52,7 @@ class DashboardScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Add Expense flow lands in Phase 2'),
-            ),
+            const SnackBar(content: Text('Open a group to add an expense.')),
           );
         },
         icon: const Icon(Icons.add),

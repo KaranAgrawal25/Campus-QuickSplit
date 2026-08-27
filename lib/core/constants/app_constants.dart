@@ -5,7 +5,8 @@ class AppConstants {
   AppConstants._();
 
   static const String appName = 'Campus QuickSplit';
-  static const String tagline = 'Split expenses. Settle smarter. Works offline.';
+  static const String tagline =
+      'Split expenses. Settle smarter. Works offline.';
 
   static const List<String> expenseCategories = [
     'Food',

@@ -72,7 +72,12 @@ void main() {
 
   group('Money.splitByRatio', () {
     test('40/30/20/10 split of ₹1200 sums exactly', () {
-      final shares = Money.splitByRatio(Money.fromRupees(1200), [40, 30, 20, 10]);
+      final shares = Money.splitByRatio(Money.fromRupees(1200), [
+        40,
+        30,
+        20,
+        10,
+      ]);
       expect(shares, [
         Money.fromRupees(480),
         Money.fromRupees(360),
@@ -85,7 +90,12 @@ void main() {
 
     test('uneven ratio split still sums exactly (no rounding drift)', () {
       // ₹1001 split 40/30/20/10 does not divide evenly in paise.
-      final shares = Money.splitByRatio(Money.fromRupees(1001), [40, 30, 20, 10]);
+      final shares = Money.splitByRatio(Money.fromRupees(1001), [
+        40,
+        30,
+        20,
+        10,
+      ]);
       final sum = shares.fold(const Money.zero(), (a, b) => a + b);
       expect(sum, Money.fromRupees(1001));
     });

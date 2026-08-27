@@ -28,25 +28,26 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-          // Ensure the single settings row always exists so `.watch()`
-          // on it never returns an empty stream.
-          await into(appSettingsTable).insert(
-            const AppSettingsTableCompanion(id: Value(0)),
-            mode: InsertMode.insertOrIgnore,
-          );
-        },
-        onUpgrade: (m, from, to) async {
-          // Phase 1 has no prior schema versions yet. Future migrations
-          // (e.g. adding a column) go here, keyed off `from`/`to`, so
-          // existing users never lose their local data on an app update.
-        },
+    onCreate: (m) async {
+      await m.createAll();
+      // Ensure the single settings row always exists so `.watch()`
+      // on it never returns an empty stream.
+      await into(appSettingsTable).insert(
+        const AppSettingsTableCompanion(id: Value(0)),
+        mode: InsertMode.insertOrIgnore,
       );
+    },
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.addColumn(groups, groups.isArchived);
+        await m.addColumn(settlements, settlements.note);
+      }
+    },
+  );
 }
 
 LazyDatabase _openConnection() {

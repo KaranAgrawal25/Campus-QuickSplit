@@ -54,12 +54,10 @@ class _StartupGate extends ConsumerWidget {
     return userAsync.when(
       data: (user) =>
           user == null ? const OnboardingScreen() : const RootShell(),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (e, _) => Scaffold(
-        body: Center(child: Text('Database error: $e')),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) =>
+          Scaffold(body: Center(child: Text('Database error: $e'))),
     );
   }
 }

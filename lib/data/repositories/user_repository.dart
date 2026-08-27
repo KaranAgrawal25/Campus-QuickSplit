@@ -43,13 +43,15 @@ class UserRepository {
       throw StateError('A current user already exists');
     }
 
-    final id = await _db.into(_db.users).insertReturning(
-      UsersCompanion.insert(
-        name: trimmed,
-        initials: _deriveInitials(trimmed),
-        isCurrentUser: const Value(true),
-      ),
-    );
+    final id = await _db
+        .into(_db.users)
+        .insertReturning(
+          UsersCompanion.insert(
+            name: trimmed,
+            initials: _deriveInitials(trimmed),
+            isCurrentUser: const Value(true),
+          ),
+        );
 
     return id;
   }
@@ -65,8 +67,7 @@ class UserRepository {
       return parts.first.substring(0, 1).toUpperCase();
     }
 
-    return (parts.first.substring(0, 1) +
-        parts.last.substring(0, 1))
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
         .toUpperCase();
   }
 }

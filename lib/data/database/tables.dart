@@ -33,6 +33,10 @@ class Groups extends Table {
   TextColumn get name => text().withLength(min: 1, max: 60)();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
+  /// Archiving preserves the group's financial history while keeping it out of
+  /// the normal picker and list. It is deliberately not a cascading delete.
+  BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -131,6 +135,7 @@ class Settlements extends Table {
   TextColumn get toUserId =>
       text().references(Users, #id, onDelete: KeyAction.cascade)();
   IntColumn get amountPaise => integer()();
+  TextColumn get note => text().nullable()();
   TextColumn get status =>
       textEnum<SettlementStatus>().withDefault(const Constant('pending'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
