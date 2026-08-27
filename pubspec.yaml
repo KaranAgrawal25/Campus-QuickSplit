@@ -1,0 +1,50 @@
+name: campus_quicksplit
+description: "Campus QuickSplit — Frictionless Local-First Peer Expense Tracker"
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.0
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management. We use plain (non-code-generated) Riverpod
+  # providers rather than riverpod_generator: it avoids a second
+  # code-generation pipeline on top of Drift's, which keeps the build
+  # graph simpler for a project this size while still giving us fully
+  # testable, compile-checked providers.
+  flutter_riverpod: ^2.6.1
+
+  # Local database
+  drift: ^2.22.1
+  sqlite3_flutter_libs: ^0.5.27
+  path_provider: ^2.1.5
+  path: ^1.9.0
+
+  # Local key-value prefs (onboarding flag, theme mode)
+  shared_preferences: ^2.3.4
+
+  # Charts (used from Phase 5 analytics onward; declared now so pubspec churn is minimal later)
+  fl_chart: ^0.70.2
+
+  # Icons / small UI helpers
+  cupertino_icons: ^1.0.8
+  intl: ^0.19.0
+
+  # Unique ids for local-only records
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # Code generation for Drift
+  build_runner: ^2.4.13
+  drift_dev: ^2.22.1
+
+flutter:
+  uses-material-design: true
