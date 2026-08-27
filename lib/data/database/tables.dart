@@ -2,13 +2,16 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 const _uuidGenerator = Uuid();
-String _newId() => _uuidGenerator.v4();
+
+/// Public because Drift emits client-default callbacks into the generated
+/// database library, which imports this table library separately.
+String newId() => _uuidGenerator.v4();
 
 /// A local person known to this device: the app's own user, plus any
 /// group members added by name (there is no server-side account system
 /// — every "user" here is just a local record).
 class Users extends Table {
-  TextColumn get id => text().clientDefault(() => _newId())();
+  TextColumn get id => text().clientDefault(newId)();
   TextColumn get name => text().withLength(min: 1, max: 60)();
 
   /// Single-letter/initials avatar fallback, derived from name at
@@ -29,7 +32,7 @@ class Users extends Table {
 }
 
 class Groups extends Table {
-  TextColumn get id => text().clientDefault(() => _newId())();
+  TextColumn get id => text().clientDefault(newId)();
   TextColumn get name => text().withLength(min: 1, max: 60)();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
@@ -56,7 +59,7 @@ class GroupMembers extends Table {
 enum SplitTypeDb { equal, specificAmount, ratio }
 
 class Expenses extends Table {
-  TextColumn get id => text().clientDefault(() => _newId())();
+  TextColumn get id => text().clientDefault(newId)();
   TextColumn get groupId =>
       text().references(Groups, #id, onDelete: KeyAction.cascade)();
   TextColumn get title => text().withLength(min: 1, max: 120)();
@@ -127,7 +130,7 @@ enum SettlementStatus { pending, completed }
 /// transfer as paid; they are a record of settlement activity, not a
 /// live-computed value.
 class Settlements extends Table {
-  TextColumn get id => text().clientDefault(() => _newId())();
+  TextColumn get id => text().clientDefault(newId)();
   TextColumn get groupId =>
       text().references(Groups, #id, onDelete: KeyAction.cascade)();
   TextColumn get fromUserId =>
