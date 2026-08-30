@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Private durable operation log used for local-first retry/replay:
+    // quicksplitUsers/{uid}/operations/{operationId}.
+    match /quicksplitUsers/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+    }
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(groupId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/groups/$(groupId))
+        && get(/databases/$(database)/documents/groups/$(groupId)).data.ownerId == request.auth.uid;
+    }
+    function isMember(groupId) {
+      return signedIn() && (isOwner(groupId)
+        || exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)));
+    }
+
+    match /groups/{groupId} {
+      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
+      // This direct resource check lets an owner list only their own groups
+      // with `where('ownerId', isEqualTo: request.auth.uid)`. The earlier
+      // get()/exists()-only rule permitted individual reads but could reject
+      // that legitimate list query, producing a partial restore with just the
+      // owner membership.
+      allow read: if signedIn() && resource.data.ownerId == request.auth.uid
+        || isMember(groupId);
+      allow update: if isOwner(groupId)
+        && request.resource.data.ownerId == resource.data.ownerId;
+      allow delete: if false;
+
+      // Groups are private account-owned mirrors of the authenticated
+      // operation log. The owner may persist every local member profile;
+      // members can read their own authorised group data.
+      match /members/{userId} {
+        allow read: if isMember(groupId);
+        allow create, update, delete: if isOwner(groupId);
+      }
+      match /expenses/{expenseId} {
+        allow read: if isMember(groupId);
+        allow create, update: if isOwner(groupId);
+        allow delete: if false;
+      }
+      match /settlements/{settlementId} {
+        allow read: if isMember(groupId);
+        allow create, update: if isOwner(groupId);
+        allow delete: if false;
+      }
+    }
+
+    // Invitation hashes remain private. Cross-account invitations are not
+    // enabled by this client; no server-side function or public rule is used.
+    match /groupInvites/{inviteId} { allow read, write: if false; }
+  }
+}

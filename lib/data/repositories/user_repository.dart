@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 
+import '../../core/payments/upi_payment.dart';
 import '../database/app_database.dart';
+import 'sync_repository.dart';
 
 /// Handles all reads/writes for [Users]. This is the only place that
 /// knows how a "current user" (the device owner) is represented in the
@@ -33,8 +35,9 @@ class UserRepository {
   Future<User> createCurrentUser(String name) async {
     final trimmed = name.trim();
 
-    if (trimmed.isEmpty) {
-      throw ArgumentError.value(name, 'name', 'must not be empty');
+    final validationError = validateDisplayName(name);
+    if (validationError != null) {
+      throw ArgumentError.value(name, 'name', validationError);
     }
 
     final existing = await getCurrentUser();
@@ -50,10 +53,137 @@ class UserRepository {
             name: trimmed,
             initials: _deriveInitials(trimmed),
             isCurrentUser: const Value(true),
+            updatedAt: Value(DateTime.now()),
           ),
         );
 
+    await _queueUser(id);
     return id;
+  }
+
+  /// Repairs a local profile after a cloud restore from an older build left
+  /// every user row marked as a member. It adopts the best matching existing
+  /// record first, preserving memberships, expense shares, and payments.
+  Future<User> recoverCurrentUser({required String name, String? email}) async {
+    final trimmedName = name.trim().isEmpty ? 'QuickSplit user' : name.trim();
+    return _db.transaction(() async {
+      final existingCurrent = await getCurrentUser();
+      if (existingCurrent != null) return existingCurrent;
+      final allUsers = await _db.select(_db.users).get();
+      final normalizedEmail = email?.trim().toLowerCase();
+      User? candidate;
+      if (normalizedEmail != null && normalizedEmail.isNotEmpty) {
+        candidate = allUsers
+            .where(
+              (user) => user.email?.trim().toLowerCase() == normalizedEmail,
+            )
+            .firstOrNull;
+      }
+      candidate ??= allUsers
+          .where(
+            (user) =>
+                user.name.trim().toLowerCase() == trimmedName.toLowerCase(),
+          )
+          .firstOrNull;
+      if (candidate == null) {
+        candidate = await _db
+            .into(_db.users)
+            .insertReturning(
+              UsersCompanion.insert(
+                name: trimmedName,
+                initials: _deriveInitials(trimmedName),
+                email: Value(normalizedEmail),
+                isCurrentUser: const Value(true),
+                updatedAt: Value(DateTime.now()),
+              ),
+            );
+      } else {
+        await (_db.update(
+          _db.users,
+        )..where((user) => user.id.equals(candidate!.id))).write(
+          UsersCompanion(
+            isCurrentUser: const Value(true),
+            email: Value(normalizedEmail ?? candidate.email),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+        candidate = await (_db.select(
+          _db.users,
+        )..where((user) => user.id.equals(candidate!.id))).getSingle();
+      }
+      final recovered = candidate;
+      await _queueUser(recovered);
+      return recovered;
+    });
+  }
+
+  Future<void> updateProfile({
+    required String userId,
+    required String name,
+    String? email,
+    String? phoneNumber,
+    String? upiId,
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) throw ArgumentError('Display name is required');
+    final phone = phoneNumber?.trim();
+    final normalizedEmail = email?.trim();
+    if (normalizedEmail != null &&
+        normalizedEmail.isNotEmpty &&
+        !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(normalizedEmail)) {
+      throw ArgumentError('Enter a valid email address');
+    }
+    if (phone != null &&
+        phone.isNotEmpty &&
+        !RegExp(r'^\+?[0-9][0-9 -]{7,14}$').hasMatch(phone)) {
+      throw ArgumentError('Enter a valid phone number');
+    }
+    final upi = upiId?.trim();
+    if (upi != null && upi.isNotEmpty && !UpiPayment.isValidUpiId(upi)) {
+      throw ArgumentError('Enter a valid UPI ID');
+    }
+    await (_db.update(
+      _db.users,
+    )..where((user) => user.id.equals(userId))).write(
+      UsersCompanion(
+        name: Value(trimmedName),
+        initials: Value(_deriveInitials(trimmedName)),
+        phoneNumber: Value(phone?.isEmpty ?? true ? null : phone),
+        email: Value(normalizedEmail?.isEmpty ?? true ? null : normalizedEmail),
+        upiId: Value(upi?.isEmpty ?? true ? null : upi),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+    final user = await (_db.select(
+      _db.users,
+    )..where((row) => row.id.equals(userId))).getSingle();
+    await _queueUser(user);
+  }
+
+  Future<void> _queueUser(User user) => SyncRepository(_db).enqueueUpsert(
+    entityType: 'user',
+    entityId: user.id,
+    payload: {
+      'id': user.id,
+      'name': user.name,
+      'initials': user.initials,
+      'phoneNumber': user.phoneNumber,
+      'email': user.email,
+      'upiId': user.upiId,
+      'isCurrentUser': user.isCurrentUser,
+      'createdAt': user.createdAt.toUtc().toIso8601String(),
+      'updatedAt': user.updatedAt.toUtc().toIso8601String(),
+    },
+  );
+
+  /// Shared UI and persistence validation for a local profile name. Keeping
+  /// it here means onboarding cannot accept a value that a repository write
+  /// would later reject.
+  static String? validateDisplayName(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) return 'Please enter your name';
+    if (trimmed.length > 60) return 'Name is too long';
+    return null;
   }
 
   static String _deriveInitials(String name) {

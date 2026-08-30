@@ -36,8 +36,12 @@ class SplitEngine {
     required List<int> ratios,
   }) {
     _validateInputs(totalPaise, userIds);
-    if (ratios.length != userIds.length || ratios.any((ratio) => ratio <= 0)) {
-      throw ArgumentError('Every participant needs a positive ratio');
+    if (ratios.length != userIds.length ||
+        ratios.any((ratio) => ratio < 0) ||
+        ratios.every((ratio) => ratio == 0)) {
+      throw ArgumentError(
+        'Ratios must be non-negative with one positive value',
+      );
     }
     final sum = ratios.fold<int>(0, (value, ratio) => value + ratio);
     final amounts = List<int>.filled(userIds.length, 0);
@@ -67,6 +71,27 @@ class SplitEngine {
     );
   }
 
+  /// Applies whole-number percentage allocations. Percentages must total
+  /// exactly 100; allocation then uses the same deterministic paise remainder
+  /// distribution as [ratio].
+  static List<SplitShare> percentage({
+    required int totalPaise,
+    required List<String> userIds,
+    required List<int> percentages,
+  }) {
+    _validateInputs(totalPaise, userIds);
+    if (percentages.length != userIds.length ||
+        percentages.any((percentage) => percentage < 0) ||
+        percentages.fold<int>(0, (sum, percentage) => sum + percentage) !=
+            100) {
+      throw ArgumentError('Percentages must be non-negative and total 100');
+    }
+    if (percentages.every((percentage) => percentage == 0)) {
+      throw ArgumentError('At least one percentage must be positive');
+    }
+    return ratio(totalPaise: totalPaise, userIds: userIds, ratios: percentages);
+  }
+
   static List<SplitShare> custom({
     required int totalPaise,
     required List<SplitShare> shares,
@@ -76,6 +101,9 @@ class SplitEngine {
     }
     if (shares.any((share) => share.amountPaise <= 0)) {
       throw ArgumentError('Custom amounts must be positive');
+    }
+    if (shares.map((share) => share.userId).toSet().length != shares.length) {
+      throw ArgumentError('A participant can only appear once');
     }
     final sum = shares.fold<int>(
       0,

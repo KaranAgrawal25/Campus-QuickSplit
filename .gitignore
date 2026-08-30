@@ -20,3 +20,37 @@ build/
 
 # VS Code
 .vscode/
+
+# Local environment files and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.key
+*.keystore
+*.jks
+key.properties
+signing.properties
+service-account*.json
+*service-account*.json
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db
+
+# Local logs and Android tooling diagnostics
+*.log
+android/.kotlin/
+
+# Firebase local artifacts
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Firebase Cloud Functions dependencies and TypeScript build output
+functions/node_modules/
+functions/lib/

@@ -11,9 +11,15 @@ class AppConstants {
   static const List<String> expenseCategories = [
     'Food',
     'Transport',
+    'Rent',
+    'Hotel',
     'Education',
+    'Shopping',
     'Subscriptions',
     'Entertainment',
+    'Utilities',
+    'Medical',
+    'Travel',
     'Other',
   ];
 

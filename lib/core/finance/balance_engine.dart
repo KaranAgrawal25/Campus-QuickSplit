@@ -43,4 +43,59 @@ class BalanceEngine {
     final net = positions[currentUserId] ?? 0;
     return (owed: net > 0 ? net : 0, owes: net < 0 ? -net : 0, net: net);
   }
+
+  /// Produces a deterministic, reduced set of transfers that settles all
+  /// supplied net positions. Positive values receive money; negative values
+  /// pay money. Names never participate in this calculation.
+  static List<BalanceTransfer> suggestedSettlements(
+    Map<String, int> positions,
+  ) {
+    final creditors =
+        positions.entries
+            .where((entry) => entry.value > 0)
+            .map((entry) => (userId: entry.key, remaining: entry.value))
+            .toList()
+          ..sort((a, b) {
+            final amount = b.remaining.compareTo(a.remaining);
+            return amount == 0 ? a.userId.compareTo(b.userId) : amount;
+          });
+    final debtors =
+        positions.entries
+            .where((entry) => entry.value < 0)
+            .map((entry) => (userId: entry.key, remaining: -entry.value))
+            .toList()
+          ..sort((a, b) {
+            final amount = b.remaining.compareTo(a.remaining);
+            return amount == 0 ? a.userId.compareTo(b.userId) : amount;
+          });
+
+    final transfers = <BalanceTransfer>[];
+    var creditorIndex = 0;
+    var debtorIndex = 0;
+    while (creditorIndex < creditors.length && debtorIndex < debtors.length) {
+      final creditor = creditors[creditorIndex];
+      final debtor = debtors[debtorIndex];
+      final amount = creditor.remaining < debtor.remaining
+          ? creditor.remaining
+          : debtor.remaining;
+      transfers.add(
+        BalanceTransfer(
+          fromUserId: debtor.userId,
+          toUserId: creditor.userId,
+          amountPaise: amount,
+        ),
+      );
+      creditors[creditorIndex] = (
+        userId: creditor.userId,
+        remaining: creditor.remaining - amount,
+      );
+      debtors[debtorIndex] = (
+        userId: debtor.userId,
+        remaining: debtor.remaining - amount,
+      );
+      if (creditors[creditorIndex].remaining == 0) creditorIndex++;
+      if (debtors[debtorIndex].remaining == 0) debtorIndex++;
+    }
+    return transfers;
+  }
 }

@@ -43,6 +43,27 @@ void main() {
       expect(shares.map((s) => s.amountPaise), [4, 3, 3]);
     });
   });
+  group('SplitEngine percentage', () {
+    test('25/25/50 allocates exact paise', () {
+      final shares = SplitEngine.percentage(
+        totalPaise: 100000,
+        userIds: ['a', 'b', 'c'],
+        percentages: [25, 25, 50],
+      );
+      expect(shares.map((share) => share.amountPaise), [25000, 25000, 50000]);
+    });
+
+    test('requires a total of exactly 100 percent', () {
+      expect(
+        () => SplitEngine.percentage(
+          totalPaise: 100,
+          userIds: ['a', 'b'],
+          percentages: [50, 49],
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
   group('SplitEngine custom', () {
     test(
       'accepts exact positive sum',
@@ -62,6 +83,16 @@ void main() {
         () => SplitEngine.custom(
           totalPaise: 100,
           shares: const [SplitShare(userId: 'a', amountPaise: 99)],
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => SplitEngine.custom(
+          totalPaise: 100,
+          shares: const [
+            SplitShare(userId: 'same-id', amountPaise: 50),
+            SplitShare(userId: 'same-id', amountPaise: 50),
+          ],
         ),
         throwsArgumentError,
       );

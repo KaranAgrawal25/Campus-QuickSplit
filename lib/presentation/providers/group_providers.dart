@@ -9,6 +9,9 @@ final groupRepositoryProvider = Provider<GroupRepository>(
 final groupsProvider = StreamProvider<List<Group>>(
   (ref) => ref.watch(groupRepositoryProvider).watchGroups(),
 );
+final archivedGroupsProvider = StreamProvider<List<Group>>(
+  (ref) => ref.watch(groupRepositoryProvider).watchArchivedGroups(),
+);
 final groupProvider = StreamProvider.family<GroupWithMembers?, String>(
   (ref, id) => ref.watch(groupRepositoryProvider).watchGroup(id),
 );

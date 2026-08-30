@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1073390920370",
+    "project_id": "campus-quicksplit",
+    "storage_bucket": "campus-quicksplit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073390920370:android:ec9af23824009e28059fab",
+        "android_client_info": {
+          "package_name": "com.example.campus_quicksplit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1073390920370-i69t3gebvoes8fhg56l00decismo4vbm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.campus_quicksplit",
+            "certificate_hash": "5c39f5ff3da154cac7c1e67648948cc1f6a907b0"
+          }
+        },
+        {
+          "client_id": "1073390920370-5edicdlnc4a55ccm5ccchr1tuat2tf3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpa0XpFe6MCWWPpcf0IJ65Tns9NnGjvbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1073390920370-5edicdlnc4a55ccm5ccchr1tuat2tf3f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1073390920370-sjk05m9ker4sualmvvls06vn22ha4btn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.campusQuicksplit"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
