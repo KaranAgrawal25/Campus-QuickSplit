@@ -60,21 +60,21 @@ Campus QuickSplit is a **local-first** Flutter expense-splitting app: every grou
 
 > Place screenshots in `docs/screenshots/` using the filenames below.
 
-| Onboarding | Dashboard | Groups |
+| Onboarding | Dashboard |
 |---|---|---|
-| ![Onboarding](docs/screenshots/onboarding.png) | ![Dashboard](docs/screenshots/dashboard.png) | ![Groups](docs/screenshots/groups.png) |
+| ![Onboarding](docs/screenshots/onboarding.png) | ![Dashboard](docs/screenshots/dashboard1.png) | ![Dashboard](docs/screenshots/dashboard1.png) |
 
-| Group Detail | Add Expense | Split Configuration |
+| Groups | Group Detail | Add Expense |
 |---|---|---|
-| ![Group Detail](docs/screenshots/group-detail.png) | ![Add Expense](docs/screenshots/add-expense.png) | ![Split Configuration](docs/screenshots/split-configuration.png) |
+| ![Groups](docs/screenshots/groups.png) | ![Group Detail](docs/screenshots/group-detail.png) | ![Add Expense](docs/screenshots/add-expense.png) |
 
-| Activity | Settle Up / UPI | Analytics |
+| Activity | Analytics |
 |---|---|---|
-| ![Activity](docs/screenshots/activity.png) | ![Settle Up](docs/screenshots/payment.png) | ![Analytics](docs/screenshots/analytics.png) |
+| ![Activity](docs/screenshots/activity.png) | ![Analytics](docs/screenshots/analytics.png) |
 
 | More — Sync, Backup, Theme |
 |---|
-| ![More](docs/screenshots/more.png) |
+| ![More](docs/screenshots/more1.png) | ![More](docs/screenshots/more2.png) |
 
 ---
 
