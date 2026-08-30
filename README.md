@@ -22,6 +22,7 @@ Campus QuickSplit is a **local-first** Flutter expense-splitting app: every grou
 - [Why Campus QuickSplit?](#why-campus-quicksplit)
 - [Problem Statement](#problem-statement)
 - [Key Features](#key-features)
+- [Project Status](#project-status)
 - [System Architecture](#system-architecture)
 - [Application Architecture](#application-architecture)
 - [Local-First Data Flow](#local-first-data-flow)
@@ -153,34 +154,65 @@ Four split types — **Equal**, **Specific amount**, **Percentage**, and **Ratio
 
 ---
 
+## Project Status
+
+| Feature | Status |
+|---|:---:|
+| Local expense tracking (offline) | ✅ |
+| Multiple payers per expense | ✅ |
+| Equal / specific-amount / percentage / ratio splits | ✅ |
+| Balance calculation | ✅ |
+| Settlement suggestions (greedy reduction) | ✅ |
+| Settlement recording (explicit confirmation) | ✅ |
+| Activity history & analytics | ✅ |
+| CSV export | ✅ |
+| Local backup (create) | ✅ |
+| Local backup (restore) | ✅ *(first-time setup only, empty database)* |
+| Recurring expenses & reminders | ✅ |
+| UPI payment assistance (intent + QR) | ✅ |
+| UPI payment **verification** | ❌ Not supported (by design) |
+| Email/password authentication | ✅ |
+| Google Sign-In | ✅ |
+| Firebase client configuration (Android) | ✅ Configured (`campus-quicksplit` project) |
+| Firestore private sync (single account, multi-device) | ⚙️ Implemented in code; requires your own Firebase project + deployed rules/Functions |
+| Firestore security rules | ⚙️ Present in repo (`firestore.rules`); deployment to a live project is a separate operational step |
+| Cloud Functions (invitation backend) | 🚧 Referenced by `firebase.json`; implemented in `functions/` |
+| QR group invitations (cross-account join) | 🚧 Data model & security rules exist; UI creation and cloud join are explicitly disabled client-side |
+| Android release signing | ⚙️ Debug signing config reused; needs a real release config before store distribution |
+| iOS platform project | ❌ Not present |
+| macOS platform project | ⚙️ Present; requires its own FlutterFire configuration (`firebase.json` currently configures Android only) |
+
+**Legend:** ✅ implemented and working · ⚙️ implemented, requires configuration/deployment · 🚧 in progress / not usable end-to-end · ❌ not present
+
+---
 
 ## System Architecture
 
 ```mermaid
 flowchart TD
     subgraph Device["On-device — always available"]
-        UI[Flutter UI] --> Providers[Riverpod Providers]
-        Providers --> Repos[Repositories]
-        Repos --> Drift[Drift ORM]
-        Drift --> SQLite[(SQLite — source of truth)]
-        Repos --> Outbox[Sync Operations Outbox]
+        UI["Flutter UI"] --> Providers["Riverpod Providers"]
+        Providers --> Repos["Repositories"]
+        Repos --> Drift["Drift ORM"]
+        Drift --> SQLite[("SQLite — source of truth")]
+        Repos --> Outbox["Sync Operations Outbox"]
     end
 
     subgraph Cloud["Firebase — optional, requires sign-in + your own project"]
-        Auth[Firebase Auth]
-        Rules[Firestore Security Rules]
-        Firestore[(Cloud Firestore\nprivate per-account operation log\n+ owner-authoritative group mirror)]
-        Functions[Cloud Functions\ninvitation backend — functions/]
+        Auth["Firebase Auth"]
+        Rules["Firestore Security Rules"]
+        Firestore[("Cloud Firestore: private per-account operation log + owner-authoritative group mirror")]
+        Functions["Cloud Functions: invitation backend (functions/)"]
     end
 
-    Outbox -->|push, when configured & authenticated| Transport[FirebaseSyncTransport]
+    Outbox -->|"push, when configured & authenticated"| Transport["FirebaseSyncTransport"]
     Transport --> Auth
     Transport --> Firestore
-    Rules -. enforces access to .-> Firestore
-    Firestore -->|pull, on manual sync| Transport
-    Transport --> Applier[Sync Change Applier]
+    Rules -. "enforces access to" .-> Firestore
+    Firestore -->|"pull, on manual sync"| Transport
+    Transport --> Applier["Sync Change Applier"]
     Applier --> Drift
-    Functions -. intended to authorize .-> Firestore
+    Functions -. "intended to authorize" .-> Firestore
 ```
 
 SQLite, via Drift, is the only source of truth on any device. The outbox and Firestore transport exist purely to mirror that local state into one signed-in account's private cloud storage.
@@ -189,11 +221,11 @@ SQLite, via Drift, is the only source of truth on any device. The outbox and Fir
 
 ```mermaid
 flowchart TD
-    Screens["Screens\npresentation/screens/*"] --> Providers["Riverpod Providers\npresentation/providers/*"]
-    Providers --> Repositories["Repositories\ndata/repositories/*"]
-    Repositories --> Core["Core domain logic\ncore/finance, core/utils, core/invites, core/payments"]
-    Repositories --> Database["Drift Database\ndata/database/*"]
-    Repositories --> Platform["Platform services\nlocal_auth, flutter_local_notifications, url_launcher, path_provider, image_picker, file_selector"]
+    Screens["Screens: presentation/screens/*"] --> Providers["Riverpod Providers: presentation/providers/*"]
+    Providers --> Repositories["Repositories: data/repositories/*"]
+    Repositories --> Core["Core domain logic: core/finance, core/utils, core/invites, core/payments"]
+    Repositories --> Database["Drift Database: data/database/*"]
+    Repositories --> Platform["Platform services: local_auth, flutter_local_notifications, url_launcher, path_provider, image_picker, file_selector"]
 ```
 
 - **Presentation**: screens (onboarding, dashboard, groups, expenses, payments, activity, analytics, more, root shell) and Riverpod providers exposing repository streams/futures to widgets.
@@ -206,11 +238,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[User Action] --> B[Repository]
-    B --> C[(Drift / SQLite)]
-    C --> D[UI State via Riverpod streams]
-    B --> E[Sync Operations Outbox]
-    E -->|only if signed in & configured| F[Firebase]
+    A["User Action"] --> B["Repository"]
+    B --> C[("Drift / SQLite")]
+    C --> D["UI State via Riverpod streams"]
+    B --> E["Sync Operations Outbox"]
+    E -->|"only if signed in & configured"| F["Firebase"]
 ```
 
 Every user action commits to SQLite through a repository first; UI state is just a stream over that same database. Queuing an outbox entry is a side effect of the same write, not a precondition for it — the write succeeds and the UI updates identically whether or not sync is configured.
@@ -219,47 +251,47 @@ Every user action commits to SQLite through a repository first; UI state is just
 
 ```mermaid
 flowchart TD
-    A[Tap Add Expense] --> B[Enter title, amount, category, date]
-    B --> C[Select participants and payer(s)]
-    C --> D[Choose split type: equal / specific / percentage / ratio]
-    D --> E[SplitEngine validates and computes each share in paise]
-    E --> F{Shares sum exactly to the total?}
+    A["Tap Add Expense"] --> B["Enter title, amount, category, date"]
+    B --> C["Select participants and payer(s)"]
+    C --> D["Choose split type: equal / specific / percentage / ratio"]
+    D --> E["SplitEngine validates and computes each share in paise"]
+    E --> F{"Shares sum exactly to the total?"}
     F -- no --> D
-    F -- yes --> G[ExpenseRepository.create persists Expense + ExpenseParticipants + ExpensePayments]
-    G --> H[Balance, activity, and analytics streams refresh]
-    H --> I{Signed in & sync configured?}
-    I -- yes --> J[SyncRepository enqueues an upsert in the local outbox]
-    I -- no --> K[Nothing queued — stays fully local]
+    F -- yes --> G["ExpenseRepository.create persists Expense + ExpenseParticipants + ExpensePayments"]
+    G --> H["Balance, activity, and analytics streams refresh"]
+    H --> I{"Signed in & sync configured?"}
+    I -- yes --> J["SyncRepository enqueues an upsert in the local outbox"]
+    I -- no --> K["Nothing queued — stays fully local"]
 ```
 
 ## Settlement Flow
 
 ```mermaid
 flowchart TD
-    A[View group balances] --> B[BalanceEngine.suggestedSettlements computes a reduced transfer list]
-    B --> C[Open a suggested transfer]
-    C --> D{Recipient has a valid UPI ID?}
-    D -- yes --> E[Show 'Pay via UPI app' and/or a UPI QR code]
-    D -- no --> F[No UPI option shown]
-    E --> G[User completes payment in an external UPI app — not tracked by the app]
-    F --> H[User pays by any other means, outside the app]
-    G --> I[User returns and explicitly confirms the settlement]
+    A["View group balances"] --> B["BalanceEngine.suggestedSettlements computes a reduced transfer list"]
+    B --> C["Open a suggested transfer"]
+    C --> D{"Recipient has a valid UPI ID?"}
+    D -- yes --> E["Show 'Pay via UPI app' and/or a UPI QR code"]
+    D -- no --> F["No UPI option shown"]
+    E --> G["User completes payment in an external UPI app — not tracked by the app"]
+    F --> H["User pays by any other means, outside the app"]
+    G --> I["User returns and explicitly confirms the settlement"]
     H --> I
-    I --> J[Settlement recorded locally; balances recomputed]
-    J --> K{Signed in & sync configured?}
-    K -- yes --> L[Settlement enqueued to the sync outbox]
-    K -- no --> M[Stays local only]
+    I --> J["Settlement recorded locally; balances recomputed"]
+    J --> K{"Signed in & sync configured?"}
+    K -- yes --> L["Settlement enqueued to the sync outbox"]
+    K -- no --> M["Stays local only"]
 ```
 
 ## Firebase Sync Architecture
 
 ```mermaid
 flowchart TD
-    Client[Flutter Client] -->|sign in| Auth[Firebase Auth\nemail/password + Google]
-    Client -->|push/pull, uid-scoped| Firestore[(Cloud Firestore)]
-    Rules[firestore.rules] -. enforces .-> Firestore
-    Client -.->|explicitly blocked client-side| GroupInvites[groupInvites/* collection]
-    Functions[Cloud Functions\nfunctions/ — referenced in firebase.json] -.->|admin-privileged writes| GroupInvites
+    Client["Flutter Client"] -->|"sign in"| Auth["Firebase Auth: email/password + Google"]
+    Client -->|"push/pull, uid-scoped"| Firestore[("Cloud Firestore")]
+    Rules["firestore.rules"] -. "enforces" .-> Firestore
+    Client -.->|"explicitly blocked client-side"| GroupInvites["groupInvites/* collection"]
+    Functions["Cloud Functions: functions/ — referenced in firebase.json"] -.->|"admin-privileged writes"| GroupInvites
 ```
 
 **Implemented in the client code:**
@@ -296,14 +328,15 @@ The codebase contains real invitation machinery: a versioned `GroupInvitePayload
 sequenceDiagram
     participant Owner as Group Owner
     participant Client as Flutter Client
-    participant Func as Cloud Functions (functions/)
-    participant FS as Firestore (groupInvites — client access denied)
+    participant Func as "Cloud Functions (functions/)"
+    participant FS as "Firestore (groupInvites — client access denied)"
 
-    Owner->>Client: Tap "Invite" (currently blocked client-side)
+    Owner->>Client: Tap 'Invite' (currently blocked client-side)
     Note over Client: Invitation creation UI is disabled today
     Client--xFunc: (intended) request invite creation
     Func--xFS: (intended) write hashed token, transactionally
-    Note over Owner,FS: Scanning a v1 legacy invite still completes a join;<br/>v2/v3 cloud joins are explicitly blocked in this build
+    Note over Owner,FS: Scanning a v1 legacy invite still completes a join
+    Note over Owner,FS: v2/v3 cloud joins are explicitly blocked in this build
 ```
 
 Treat this as a feature whose data model and security boundary are ready, but whose UI and server implementation are still in progress.
@@ -578,8 +611,12 @@ Coverage found in `test/`:
 - UPI payment completion is not externally verified.
 - QR-based group invitations aren't usable end-to-end in the current UI.
 - Cloud sync is private, single-account, multi-device backup — not real-time multi-user collaboration.
+- Backup restore only runs during first-time setup, into an empty database.
 - Android release builds currently reuse the debug signing configuration.
 - No iOS platform project exists; the macOS platform project has no Firebase client configuration generated yet.
+- Whether Firestore rules and Cloud Functions have actually been deployed to a live Firebase project is an operational step that must be verified separately.
+- Partial settlements (paying back less than a suggested amount) aren't supported by the settlement-recording code.
+- `share_plus` is declared as a dependency but appears unused in `lib/`.
 
 ## Roadmap / Future Improvements
 
@@ -590,6 +627,7 @@ Coverage found in `test/`:
 - Confirm/complete macOS support, and consider iOS.
 - A general "restore backup" entry point outside first-time setup, with explicit merge/overwrite handling.
 - Optional partial-settlement recording.
+- Richer sync conflict resolution if/when true multi-user shared groups are built.
 
 ## Contributing
 
