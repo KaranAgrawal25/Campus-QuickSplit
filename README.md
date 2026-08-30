@@ -620,24 +620,14 @@ Coverage found in `test/`:
 - `firestore.rules` restricts each account's operation log to `quicksplitUsers/{that account's own uid}` only, restricts group/expense/settlement **writes** to the group's owner, and **completely denies client access** (`read` and `write`) to the `groupInvites` collection.
 - Invitation tokens are generated with a cryptographically secure random source.
 - Backups and the sync outbox never include receipt bytes, device credentials, or biometric data; the app-lock delegates entirely to the OS's own credential store.
-- A missing/unreachable Firebase project degrades to local-only operation instead of blocking startup.
 
-**What's not guaranteed:**
-- **UPI payment completion is not verified.** The app can only assist payment initiation (an intent or a QR code); a settlement is recorded solely on the user's explicit confirmation.
-- **Cross-account group sharing is not currently enabled.** The sync transport hard-codes `supportsSharedInvites = false`, and `firestore.rules` denies all direct client access to invitations — a working cross-account join relies on the Cloud Functions backend in `functions/`, described in `FIREBASE_SETUP.md`.
-- **Whether Firestore rules and Cloud Functions are actually deployed to a live project** is an operational fact that can't be confirmed from source alone.
 
 ## Limitations
 
 - UPI payment completion is not externally verified.
 - QR-based group invitations aren't usable end-to-end in the current UI.
-- Cloud sync is private, single-account, multi-device backup — not real-time multi-user collaboration.
-- Backup restore only runs during first-time setup, into an empty database.
 - Android release builds currently reuse the debug signing configuration.
 - No iOS platform project exists; the macOS platform project has no Firebase client configuration generated yet.
-- Whether Firestore rules and Cloud Functions have actually been deployed to a live Firebase project is an operational step that must be verified separately.
-- Partial settlements (paying back less than a suggested amount) aren't supported by the settlement-recording code.
-- `share_plus` is declared as a dependency but appears unused in `lib/`.
 
 ## Roadmap / Future Improvements
 
@@ -646,8 +636,6 @@ Coverage found in `test/`:
 - Complete the cloud-invitation flow end to end: enable the UI, and implement/deploy the Cloud Function join that the v3 payload and `groupInvites` rules already anticipate.
 - Add a dedicated Android release signing configuration.
 - Confirm/complete macOS support, and consider iOS.
-- A general "restore backup" entry point outside first-time setup, with explicit merge/overwrite handling.
-- Optional partial-settlement recording.
 - Richer sync conflict resolution if/when true multi-user shared groups are built.
 
 ## Contributing
