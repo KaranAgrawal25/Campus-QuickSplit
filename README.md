@@ -65,6 +65,7 @@ Try Campus QuickSplit on Android:
 
 [⬇️ Download Campus QuickSplit APK](https://github.com/KaranAgrawal25/Campus-QuickSplit/releases/latest)
 
+
 ### Screenshots
 
 <p align="center">
