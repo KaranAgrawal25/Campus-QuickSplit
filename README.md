@@ -519,7 +519,7 @@ campus_quicksplit/
 ## Quick Start
 
 ```bash
-git clone <https://github.com/KaranAgrawal25/Campus-QuickSplit.git>
+git clone https://github.com/KaranAgrawal25/Campus-QuickSplit.git
 cd campus_quicksplit
 flutter pub get
 flutter run
