@@ -66,65 +66,66 @@ Campus QuickSplit is a **local-first** Flutter expense-splitting app: every grou
   <tr>
     <th align="center">Onboarding</th>
     <th align="center">Dashboard</th>
-    <th align="center">Dashboard Overview</th>
   </tr>
   <tr>
     <td align="center">
-      <img src="docs/screenshots/onboarding.png" width="200">
+      <img src="docs/screenshots/onboarding.png" width="260">
     </td>
     <td align="center">
-      <img src="docs/screenshots/dashboard1.png" width="200">
-    </td>
-    <td align="center">
-      <img src="docs/screenshots/dashboard2.png" width="200">
+      <img src="docs/screenshots/dashboard1.png" width="260">
     </td>
   </tr>
 
   <tr>
+    <th align="center">Dashboard Overview</th>
     <th align="center">Groups</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screenshots/dashboard2.png" width="260">
+    </td>
+    <td align="center">
+      <img src="docs/screenshots/groups.png" width="260">
+    </td>
+  </tr>
+
+  <tr>
     <th align="center">Group Detail</th>
     <th align="center">Add Expense</th>
   </tr>
   <tr>
     <td align="center">
-      <img src="docs/screenshots/groups.png" width="200">
+      <img src="docs/screenshots/group-detail.png" width="260">
     </td>
     <td align="center">
-      <img src="docs/screenshots/group-detail.png" width="200">
-    </td>
-    <td align="center">
-      <img src="docs/screenshots/add-expense.png" width="200">
+      <img src="docs/screenshots/add-expense.png" width="260">
     </td>
   </tr>
 
   <tr>
     <th align="center">Activity</th>
     <th align="center">Analytics</th>
-    <th align="center">More — Main</th>
   </tr>
   <tr>
     <td align="center">
-      <img src="docs/screenshots/activity.png" width="200">
+      <img src="docs/screenshots/activity.png" width="260">
     </td>
     <td align="center">
-      <img src="docs/screenshots/analytics.png" width="200">
-    </td>
-    <td align="center">
-      <img src="docs/screenshots/more1.png" width="200">
+      <img src="docs/screenshots/analytics.png" width="260">
     </td>
   </tr>
 
   <tr>
+    <th align="center">More — Main</th>
     <th align="center">More — Backup & Settings</th>
-    <th></th>
-    <th></th>
   </tr>
   <tr>
     <td align="center">
-      <img src="docs/screenshots/more2.png" width="200">
+      <img src="docs/screenshots/more1.png" width="260">
     </td>
-    <td></td>
-    <td></td>
+    <td align="center">
+      <img src="docs/screenshots/more2.png" width="260">
+    </td>
   </tr>
 </table>
 
