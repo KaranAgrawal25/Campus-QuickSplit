@@ -599,12 +599,10 @@ Coverage found in `test/`:
 
 ## Contributing
 
-No contribution guidelines currently exist in this repository. If you'd like to contribute, open an issue describing the change before submitting a pull request.
+Contributions are welcome.
+
+Please read the [Contributing Guidelines](CONTRIBUTING.md) before opening an issue or pull request.
 
 ## License
 
-```text
-License: Not currently specified.
-```
-
-Add a `LICENSE` file (e.g. MIT, Apache-2.0) before treating this as an open-source repository.
+Campus QuickSplit is licensed under the [MIT License](LICENSE).
