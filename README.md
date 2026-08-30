@@ -22,7 +22,6 @@ Campus QuickSplit is a **local-first** Flutter expense-splitting app: every grou
 - [Why Campus QuickSplit?](#why-campus-quicksplit)
 - [Problem Statement](#problem-statement)
 - [Key Features](#key-features)
-- [Project Status](#project-status)
 - [System Architecture](#system-architecture)
 - [Application Architecture](#application-architecture)
 - [Local-First Data Flow](#local-first-data-flow)
@@ -154,37 +153,6 @@ Four split types — **Equal**, **Specific amount**, **Percentage**, and **Ratio
 
 ---
 
-## Project Status
-
-| Feature | Status |
-|---|:---:|
-| Local expense tracking (offline) | ✅ |
-| Multiple payers per expense | ✅ |
-| Equal / specific-amount / percentage / ratio splits | ✅ |
-| Balance calculation | ✅ |
-| Settlement suggestions (greedy reduction) | ✅ |
-| Settlement recording (explicit confirmation) | ✅ |
-| Activity history & analytics | ✅ |
-| CSV export | ✅ |
-| Local backup (create) | ✅ |
-| Local backup (restore) | ✅ *(first-time setup only, empty database)* |
-| Recurring expenses & reminders | ✅ |
-| UPI payment assistance (intent + QR) | ✅ |
-| UPI payment **verification** | ❌ Not supported (by design) |
-| Email/password authentication | ✅ |
-| Google Sign-In | ✅ |
-| Firebase client configuration (Android) | ✅ Configured (`campus-quicksplit` project) |
-| Firestore private sync (single account, multi-device) | ⚙️ Implemented in code; requires your own Firebase project + deployed rules/Functions |
-| Firestore security rules | ⚙️ Present in repo (`firestore.rules`); deployment to a live project is a separate operational step |
-| Cloud Functions (invitation backend) | 🚧 Referenced by `firebase.json`; implemented in `functions/` |
-| QR group invitations (cross-account join) | 🚧 Data model & security rules exist; UI creation and cloud join are explicitly disabled client-side |
-| Android release signing | ⚙️ Debug signing config reused; needs a real release config before store distribution |
-| iOS platform project | ❌ Not present |
-| macOS platform project | ⚙️ Present; requires its own FlutterFire configuration (`firebase.json` currently configures Android only) |
-
-**Legend:** ✅ implemented and working · ⚙️ implemented, requires configuration/deployment · 🚧 in progress / not usable end-to-end · ❌ not present
-
----
 
 ## System Architecture
 
