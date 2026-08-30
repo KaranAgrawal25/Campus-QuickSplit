@@ -22,7 +22,6 @@ Campus QuickSplit is a **local-first** Flutter expense-splitting app: every grou
 - [Why Campus QuickSplit?](#why-campus-quicksplit)
 - [Problem Statement](#problem-statement)
 - [Key Features](#key-features)
-- [Project Status](#project-status)
 - [System Architecture](#system-architecture)
 - [Application Architecture](#application-architecture)
 - [Local-First Data Flow](#local-first-data-flow)
@@ -154,37 +153,6 @@ Four split types — **Equal**, **Specific amount**, **Percentage**, and **Ratio
 
 ---
 
-## Project Status
-
-| Feature | Status |
-|---|:---:|
-| Local expense tracking (offline) | ✅ |
-| Multiple payers per expense | ✅ |
-| Equal / specific-amount / percentage / ratio splits | ✅ |
-| Balance calculation | ✅ |
-| Settlement suggestions (greedy reduction) | ✅ |
-| Settlement recording (explicit confirmation) | ✅ |
-| Activity history & analytics | ✅ |
-| CSV export | ✅ |
-| Local backup (create) | ✅ |
-| Local backup (restore) | ✅ *(first-time setup only, empty database)* |
-| Recurring expenses & reminders | ✅ |
-| UPI payment assistance (intent + QR) | ✅ |
-| UPI payment **verification** | ❌ Not supported (by design) |
-| Email/password authentication | ✅ |
-| Google Sign-In | ✅ |
-| Firebase client configuration (Android) | ✅ Configured (`campus-quicksplit` project) |
-| Firestore private sync (single account, multi-device) | ⚙️ Implemented in code; requires your own Firebase project + deployed rules/Functions |
-| Firestore security rules | ⚙️ Present in repo (`firestore.rules`); deployment to a live project is a separate operational step |
-| Cloud Functions (invitation backend) | 🚧 Referenced by `firebase.json`; implemented in `functions/` |
-| QR group invitations (cross-account join) | 🚧 Data model & security rules exist; UI creation and cloud join are explicitly disabled client-side |
-| Android release signing | ⚙️ Debug signing config reused; needs a real release config before store distribution |
-| iOS platform project | ❌ Not present |
-| macOS platform project | ⚙️ Present; requires its own FlutterFire configuration (`firebase.json` currently configures Android only) |
-
-**Legend:** ✅ implemented and working · ⚙️ implemented, requires configuration/deployment · 🚧 in progress / not usable end-to-end · ❌ not present
-
----
 
 ## System Architecture
 
@@ -610,12 +578,8 @@ Coverage found in `test/`:
 - UPI payment completion is not externally verified.
 - QR-based group invitations aren't usable end-to-end in the current UI.
 - Cloud sync is private, single-account, multi-device backup — not real-time multi-user collaboration.
-- Backup restore only runs during first-time setup, into an empty database.
 - Android release builds currently reuse the debug signing configuration.
 - No iOS platform project exists; the macOS platform project has no Firebase client configuration generated yet.
-- Whether Firestore rules and Cloud Functions have actually been deployed to a live Firebase project is an operational step that must be verified separately.
-- Partial settlements (paying back less than a suggested amount) aren't supported by the settlement-recording code.
-- `share_plus` is declared as a dependency but appears unused in `lib/`.
 
 ## Roadmap / Future Improvements
 
@@ -626,7 +590,6 @@ Coverage found in `test/`:
 - Confirm/complete macOS support, and consider iOS.
 - A general "restore backup" entry point outside first-time setup, with explicit merge/overwrite handling.
 - Optional partial-settlement recording.
-- Richer sync conflict resolution if/when true multi-user shared groups are built.
 
 ## Contributing
 
