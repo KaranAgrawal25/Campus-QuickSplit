@@ -56,25 +56,23 @@ Campus QuickSplit is a **local-first** Flutter expense-splitting app: every grou
 
 [Watch the Campus QuickSplit Demo](YOUR_GOOGLE_DRIVE_VIDEO_URL)
 
-## Screenshots
+### Screenshots
 
-> Place screenshots in `docs/screenshots/` using the filenames below.
-
-| Onboarding | Dashboard |
+| Onboarding | Dashboard 1 | Dashboard 2 |
 |---|---|---|
-| ![Onboarding](docs/screenshots/onboarding.png) | ![Dashboard](docs/screenshots/dashboard1.png) | ![Dashboard](docs/screenshots/dashboard1.png) |
+| ![Onboarding](docs/screenshots/onboarding.png) | ![Dashboard 1](docs/screenshots/dashboard1.png) | ![Dashboard 2](docs/screenshots/dashboard2.png) |
 
 | Groups | Group Detail | Add Expense |
 |---|---|---|
 | ![Groups](docs/screenshots/groups.png) | ![Group Detail](docs/screenshots/group-detail.png) | ![Add Expense](docs/screenshots/add-expense.png) |
 
-| Activity | Analytics |
+| Activity | Analytics | More 1 |
 |---|---|---|
-| ![Activity](docs/screenshots/activity.png) | ![Analytics](docs/screenshots/analytics.png) |
+| ![Activity](docs/screenshots/activity.png) | ![Analytics](docs/screenshots/analytics.png) | ![More 1](docs/screenshots/more1.png) |
 
-| More — Sync, Backup, Theme |
-|---|
-| ![More](docs/screenshots/more1.png) | ![More](docs/screenshots/more2.png) |
+| More 2 | | |
+|---|---|---|
+| ![More 2](docs/screenshots/more2.png) | | |
 
 ---
 
