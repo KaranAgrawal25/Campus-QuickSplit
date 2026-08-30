@@ -58,6 +58,12 @@ Campus QuickSplit is a **local-first** Flutter expense-splitting app: every grou
 
 ### Youtube Link if drive not available [Watch the Campus QuickSplit Demo](https://youtube.com/shorts/KtrlTQe5fEg?si=Rb6RnFos0A_GFDti)
 
+## 📱 Download APK
+
+Try Campus QuickSplit on Android:
+
+[⬇️ Download Campus QuickSplit APK](https://github.com/KaranAgrawal25/Campus-QuickSplit/releases/latest)
+
 ### Screenshots
 
 <p align="center">
